@@ -540,7 +540,7 @@ scoop install ffuf</pre>
             <h2 class="italic-serif">Tracking <em>someone else's</em> car.</h2>
             <div class="challenge-meta">
               <span class="pill pill-critical"><span class="dot"></span>Critical</span>
-              <span class="pill pill-tool">crAPI Challenge #1</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #1</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -596,6 +596,14 @@ Authorization: Bearer <span class="tok-str">&lt;jwt&gt;</span></pre>
           </li>
         </ol>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          You now have your own vehicle's UUID and a <em>different user's</em> <code>vehicleid</code> from
+          the community response. Send the location request to <strong>Burp Repeater</strong> and ask
+          yourself: what is the only thing in the URL that identifies <em>whose</em> vehicle is being
+          queried? What happens if you change it to someone else's ID — while keeping your own JWT?
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Server-side enforce <code>WHERE vehicle.owner_id = current_user.id</code> on every vehicle lookup.</li>
@@ -616,7 +624,7 @@ Authorization: Bearer <span class="tok-str">&lt;jwt&gt;</span></pre>
             <h2 class="italic-serif">A four-digit door with <em>no lock</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-critical"><span class="dot"></span>Critical</span>
-              <span class="pill pill-tool">crAPI Challenge #3</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #3</a></span>
               <span class="pill pill-tool">ffuf</span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
@@ -675,6 +683,15 @@ Content-Type: application/json
 {<span class="tok-str">"email"</span>: <span class="tok-str">"adam007@example.com"</span>}</pre>
 </div>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          The UI sends the OTP reset to <code>/v3/check-otp</code> — but look carefully at the endpoint
+          list above. Is there another version of the same endpoint? Try sending the forget-password
+          request first, then think about how you'd brute-force a 4-digit code (0000–9999) against the
+          <em>unprotected</em> version using a fuzzer like <code>ffuf</code> or Burp Intruder. What
+          HTTP status code do wrong guesses return vs. the correct one?
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Decommission v2 immediately - return 410 Gone.</li>
@@ -695,7 +712,7 @@ Content-Type: application/json
             <h2 class="italic-serif">Shopping with a <em>minus sign</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">crAPI Challenge #8 / #9</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #8 / #9</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -749,6 +766,14 @@ Content-Type: application/json
 
         <p>Balance is now $90.</p>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          Look at the <code>quantity</code> field in the captured request. The server accepts whatever
+          value you send — it performs no sanity check. What happens if quantity is a negative number?
+          Send the request to <strong>Burp Repeater</strong> and experiment. For Challenge #9, think
+          bigger: what quantity would push your balance above $1,000 in a single request?
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Server-side validate every numeric property: <code>quantity &gt; 0</code>, <code>unit_price &gt; 0</code>.</li>
@@ -769,7 +794,7 @@ Content-Type: application/json
             <h2 class="italic-serif">A <em>thousand</em> mechanic calls in one POST.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">crAPI Challenge #6</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #6</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -824,6 +849,15 @@ Content-Type: application/json
 }</pre>
 </div>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          Look closely at the two fields the server blindly honors from the client:
+          <code>repeat_request_if_failed</code> and <code>number_of_repeats</code>. Send the captured
+          request to <strong>Burp Repeater</strong> and ask: what would happen if you set
+          <code>repeat_request_if_failed</code> to <code>true</code> and pushed
+          <code>number_of_repeats</code> to a very large value — say 1000? Watch the response message carefully.
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Hard-cap loop parameters server-side (e.g., <code>number_of_repeats ≤ 3</code>) - or ignore the client value entirely and compute it.</li>
@@ -844,7 +878,7 @@ Content-Type: application/json
             <h2 class="italic-serif">Two letters: <em>user → admin</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-critical"><span class="dot"></span>Critical</span>
-              <span class="pill pill-tool">crAPI Challenge #7</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #7</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -888,6 +922,16 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
           <li>The response <code>Allow</code> header reveals <code>GET, PUT, DELETE, OPTIONS</code> - DELETE is supported.</li>
         </ol>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          You captured a <code>PUT</code> to <code>/identity/api/v2/<strong>user</strong>/videos/{id}</code>.
+          First, send it to Repeater and change the method to <code>OPTIONS</code> — the <code>Allow</code>
+          response header will tell you which HTTP methods are supported on this path. Spot anything
+          interesting? Now think about the URL itself: what happens if you swap the word
+          <code>user</code> for <code>admin</code>? Video IDs are sequential integers — try a few small
+          values to reach a video that isn't yours.
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Never gate authorization on the URL path. Check the authenticated principal's role claim server-side.</li>
@@ -908,7 +952,7 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
             <h2 class="italic-serif">Refund-bombing the <em>same form</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">crAPI Challenge #9 (automated)</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #9 (automated)</a></span>
               <span class="pill pill-tool">Burp Intruder</span>
             </div>
           </div>
@@ -940,6 +984,15 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
         <h3>Reconnaissance</h3>
         <p>Same captured POST as <a href="#api3">API3</a> - the order endpoint with a negative quantity.</p>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          You already know how to trigger one negative-quantity refund from API3. API6 is about
+          <em>automation</em> — the flow has no rate limit, no CAPTCHA, and no per-account cap.
+          Use <strong>Burp Intruder</strong> (or repeat the Repeater request many times) to fire the
+          same refund request in rapid succession. Watch your balance climb. The question to ask is:
+          what stops a real attacker from running this overnight?
+        </div>
+
         <h3>Remediation (per OWASP API6:2023 guidance)</h3>
         <ol>
           <li><strong>Device fingerprinting</strong> - deny unexpected clients (headless browsers, default-config Selenium).</li>
@@ -962,7 +1015,7 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
             <h2 class="italic-serif">Making crAPI fetch <em>whatever you ask</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-critical"><span class="dot"></span>Critical</span>
-              <span class="pill pill-tool">crAPI Challenge #11</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #11</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -988,6 +1041,16 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
         <p>Same baseline as API4. Look at the request body - note the <code>mechanic_api</code> field
         pointing at an internal localhost URL. That's the user-controlled URI.</p>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          The <code>mechanic_api</code> field is a URL the <em>server</em> will fetch on your behalf.
+          Send the request to <strong>Burp Repeater</strong> and replace that URL with something
+          external — try a public domain. Does the server make the call and return the response?
+          Now think about internal targets: <code>http://localhost:8025</code> is MailHog (other users'
+          emails). What else might be reachable from inside the Docker network that isn't exposed
+          to your browser directly?
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Allow-list destinations rather than block-list.</li>
@@ -1008,7 +1071,7 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
             <h2 class="italic-serif">Endpoints with <em>no door</em> at all.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">crAPI Challenge #14</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #14</a></span>
               <span class="pill pill-tool">Burp Repeater</span>
             </div>
           </div>
@@ -1048,6 +1111,16 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
           <li>From <strong>Past Orders → Order Details</strong>, capture the GET request to <code>/workshop/api/shop/orders/&lt;order_id&gt;</code>.</li>
         </ol>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          Send the captured GET to <strong>Burp Repeater</strong>. The request has an
+          <code>Authorization: Bearer ...</code> header — what happens if you simply
+          <em>delete that entire header line</em> and resend? Compare the two responses side by side
+          using <strong>Burp Comparer</strong> (right-click each response → Send to Comparer).
+          If the responses are identical, the endpoint has no auth check at all. Try iterating
+          the <code>order_id</code> value to see if you can read other users' orders.
+        </div>
+
         <h3>Remediation</h3>
         <ol>
           <li>Apply auth middleware <strong>globally</strong> with explicit opt-out for genuine public endpoints (login, signup, reset).</li>
@@ -1069,7 +1142,7 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
             <h2 class="italic-serif">The version <em>they forgot to remove</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">embedded in crAPI Challenge #3</span>
+              <span class="pill pill-tool">embedded in <a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #3</a></span>
               <span class="pill pill-tool">Burp HTTP history</span>
             </div>
           </div>
@@ -1120,6 +1193,16 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
           <li>Manually probe sibling paths: if the UI calls <code>/v3/X</code>, test <code>/v2/X</code>, <code>/v1/X</code>, <code>/api/X</code> in Repeater.</li>
         </ol>
 
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          Look through your <strong>Proxy → HTTP history</strong> and note the API versions used
+          across all endpoints. Almost everything is <code>/v2/</code> — but one endpoint is
+          <code>/v3/</code>. That asymmetry means a <code>/v2/</code> sibling almost certainly still
+          exists. Open <strong>Burp Repeater</strong>, take a request to the v3 endpoint, and manually
+          change <code>v3</code> to <code>v2</code> in the path. Does it respond? Is it protected
+          the same way?
+        </div>
+
         <h3>Other inventory hints in crAPI</h3>
         <ul>
           <li><code>/.well-known/jwks.json</code> - useful for JWT attacks but also a documentation tell (you can fingerprint the auth lib).</li>
@@ -1144,16 +1227,15 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
           <div class="challenge-number">10</div>
           <div class="challenge-header-text">
             <div class="challenge-category">API10:2023 · Unsafe Consumption of APIs</div>
-            <h2 class="italic-serif">The chatbot trusts <em>too much</em>.</h2>
+            <h2 class="italic-serif">The coupon service trusts <em>whatever the validator says</em>.</h2>
             <div class="challenge-meta">
               <span class="pill pill-high"><span class="dot"></span>High</span>
-              <span class="pill pill-tool">crAPI Challenges #16–18</span>
-              <span class="pill pill-tool">develop branch only</span>
-              <span class="pill pill-tool">Burp Repeater</span>
+              <span class="pill pill-tool"><a href="https://owasp.org/crAPI/docs/challenges.html" target="_blank" rel="noopener">crAPI Challenge #12</a></span>
+              <span class="pill pill-tool">Burp Proxy / Repeater</span>
             </div>
           </div>
-        
         </div>
+
         <div class="lab-timer-container" data-lab="api10">
           <div class="timer-display">
             <span class="timer-icon">⏱</span>
@@ -1164,37 +1246,75 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
 
         <h3>Vulnerability summary</h3>
         <p>
-          API10 is about trusting <em>upstream</em> APIs without validation. crAPI's chatbot forwards
-          user prompts to an LLM provider and renders the LLM's response directly in the frontend.
-          The chatbot also has internal tool-calling authority - it can query other crAPI services
-          on the user's behalf. Three classes of impact:
+          API10 is about <strong>blindly trusting responses from upstream or third-party APIs</strong>
+          without re-validating them against your own security model. crAPI's coupon feature delegates
+          the validity check to an external coupon-validation service. The backend receives that
+          service's JSON response and applies the discount directly — no independent server-side
+          verification of the coupon value or usage count. An attacker who can intercept or replay
+          that upstream response can manufacture any discount they want.
         </p>
-        <ul>
-          <li><strong>#16 client-side rendering injection</strong> - LLM output is rendered without sanitization, so prompt-injected HTML/Markdown executes.</li>
-          <li><strong>#17 credential extraction</strong> - prompt injection makes the chatbot leak other users' data via its tool calls.</li>
-          <li><strong>#18 action-on-behalf</strong> - chatbot performs privileged actions for a prompted-in user.</li>
-        </ul>
 
-        <div class="callout callout-warning">
-          <span class="callout-title">Requires the develop branch</span>
-          The chatbot service is not in the stable/main release. Redeploy with the develop branch and the
-          LLM provider env vars configured per <a href="https://github.com/OWASP/crAPI/blob/develop/docs/setup.md" target="_blank" rel="noopener"><code>docs/setup.md#chatbot-llm-configuration</code></a> before this section.
+        <h3>Affected endpoint</h3>
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-traffic-lights"><span></span><span></span><span></span></span>
+            <span class="code-block-label">coupon validation · called server-side</span>
+            <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
+          </div>
+<pre><span class="tok-method">POST</span> <span class="tok-path">/community/api/v2/coupon/validate-coupon</span></pre>
         </div>
 
         <h3>Reconnaissance</h3>
         <ol class="steps">
-          <li>Open the chatbot widget in crAPI. Send a benign prompt ("What's my balance?") and capture the request in Burp.</li>
-          <li>Note the endpoint and request shape - typically <code>POST /chatbot/api/chat</code> with a free-form <code>message</code> field.</li>
+          <li>Log in to crAPI. Navigate to the <strong>Shop</strong> and proceed to apply a coupon code.</li>
+          <li>With Burp Proxy active and intercepting, submit any coupon code (e.g. <code>TRAC075</code>).</li>
+          <li>Observe the outbound request — crAPI calls its coupon-validation endpoint:
+<div class="code-block" style="margin-top:0.5rem">
+  <div class="code-block-header">
+    <span class="code-traffic-lights"><span></span><span></span><span></span></span>
+    <span class="code-block-label">coupon validation request</span>
+    <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
+  </div>
+<pre>POST /community/api/v2/coupon/validate-coupon
+Content-Type: application/json
+
+{"coupon_code":"TRAC075"}</pre>
+</div>
+          </li>
+          <li>Forward the request and capture the validation <strong>response</strong> in Burp. Note the JSON shape — typically <code>{"coupon_code":"TRAC075","amount":75,"createdAt":"..."}</code>.</li>
         </ol>
+
+        <div class="callout callout-hint">
+          <span class="callout-title">Hint — what to try next</span>
+          The server sends the coupon code to the validator and then <em>trusts the response back</em>
+          without checking the amount against its own records. You have two angles:
+          <ul style="margin-top:0.5rem">
+            <li><strong>Intercept and tamper:</strong> With Burp intercept on, submit a coupon and
+            modify the <code>amount</code> value in the <em>response</em> before it reaches the
+            crAPI backend. What discount does crAPI apply?</li>
+            <li><strong>Match and Replace:</strong> Set up a Burp rule under
+            <em>Proxy → Proxy settings → Match and replace</em> to automatically rewrite
+            <code>"amount":\d+</code> to <code>"amount":10000</code> in every response body.
+            Then apply any coupon and complete checkout — does crAPI validate the amount
+            independently?</li>
+          </ul>
+        </div>
+
+        <h3>What to look for</h3>
+        <ul>
+          <li>The application's own backend is the last line of defence. Delegating trust decisions to a third party means <em>their</em> compromise (or a MITM) becomes your breach.</li>
+          <li>This is distinct from SSRF (API7) — here the attacker tampers with the <em>response</em> the server receives, not the <em>destination</em> it connects to.</li>
+          <li>Any integration point — payment gateway, shipping calculator, coupon validator, identity provider — is a potential API10 surface.</li>
+        </ul>
 
         <h3>Remediation</h3>
         <ol>
-          <li>Treat every LLM response as untrusted input. HTML-encode by default; render Markdown through a strict allow-list.</li>
-          <li>Authorization decisions stay on the backend. The chatbot's tool layer must check "can this <em>user</em> do this action" - never delegate to the model.</li>
-          <li>Validate every tool call's parameters against the authenticated user's scope before executing.</li>
-          <li>Add an output classifier / guardrail layer between LLM and frontend (e.g., LLM Guard, Lakera).</li>
-          <li>Per-action rate limits on chatbot-driven operations.</li>
-          <li>Reference the <a href="https://genai.owasp.org/" target="_blank" rel="noopener">OWASP GenAI Security Project</a> and the <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener">OWASP Top 10 for LLM Applications</a> for the full control set.</li>
+          <li><strong>Never trust, always verify</strong> — re-validate upstream responses against your own data store before acting on them (e.g. look up the coupon amount in your own DB, not from the validator's response).</li>
+          <li><strong>Sign or MAC upstream responses</strong> — require the third-party service to sign responses; verify the signature server-side before processing.</li>
+          <li><strong>Use HTTPS with certificate pinning</strong> for all third-party API calls to prevent interception and tampering.</li>
+          <li><strong>Input validation on downstream data</strong> — treat every field in a third-party response as untrusted: enforce type, range, and business-rule constraints independently.</li>
+          <li><strong>Least-privilege integration</strong> — the coupon service should only return a boolean (valid/invalid) and a pre-agreed discount tier, not a free-form numeric amount the caller acts on directly.</li>
+          <li>Log and alert on upstream responses that deviate from expected schemas or value ranges.</li>
         </ol>
       </section>
 
@@ -1522,8 +1642,8 @@ Authorization: Bearer &lt;your-jwt&gt;</pre>
 
         <h3>Adjacent OWASP projects</h3>
         <ul>
-          <li><a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener">OWASP Top 10 for LLM Applications</a> - companion to API10</li>
-          <li><a href="https://genai.owasp.org/" target="_blank" rel="noopener">OWASP GenAI Security Project</a> - for the chatbot-style API10 challenges</li>
+          <li><a href="https://owasp.org/API-Security/editions/2023/en/0xa10-unsafe-consumption-of-apis/" target="_blank" rel="noopener">OWASP API10:2023 · Unsafe Consumption of APIs</a> - canonical guidance</li>
+          <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Javascript_Management_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Third-Party Integration Cheat Sheet</a> - controls for consuming external APIs safely</li>
         </ul>
       </section>
 
